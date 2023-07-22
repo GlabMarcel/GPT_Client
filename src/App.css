@@ -7,6 +7,7 @@
   flex-direction: column;
   justify-content: space-between;
 }
+
 .settings-sidebar {
   position: fixed;
   left: 0;
@@ -24,7 +25,6 @@
 .settings-sidebar.open {
   transform: translateX(0);
 }
-
 
 .chatbox {
   overflow-y: auto;
@@ -59,4 +59,18 @@ input {
 
 button {
   width: 15%;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.app.sidebar-open .chat-interface {
+  margin-left: 250px; /* match the width of the sidebar */
+}
+
+.chat-interface {
+  flex: 1;
+  transition: margin-left 0.3s ease-in-out;
 }

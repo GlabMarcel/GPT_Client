@@ -1,5 +1,5 @@
 // App.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Paper, CircularProgress, Typography } from '@material-ui/core';
 import { makeStyles, createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { blue, pink } from '@material-ui/core/colors';
@@ -52,10 +52,6 @@ const App = () => {
     setNewMessage(event.target.value);
   };
 
-  const handleOpenSidebar = () => {
-    setSidebarOpen(true);
-  };
-
   const handleCloseSidebar = () => {
     setSidebarOpen(false);
   };
@@ -88,7 +84,6 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <button onClick={handleOpenSidebar}>Open Settings</button>
       <SettingsSidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       <Paper className={classes.root}>
         <div className={classes.chatContainer}>
