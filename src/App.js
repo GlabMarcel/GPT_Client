@@ -7,6 +7,7 @@ import MessageList from './Message/MessageList';
 import MessageForm from './Message/MessageForm';
 import { sendMessageToApi } from './API/API';
 import SettingsSidebar from './Settings/SettingsSidebar'; // import SettingsSidebar
+import './App.css';
 
 const theme = createTheme({
   palette: {
