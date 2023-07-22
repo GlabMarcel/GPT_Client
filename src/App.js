@@ -1,25 +1,105 @@
-import logo from './logo.svg';
-import './App.css';
+// App.js
+import React, { useState, useEffect, useRef } from 'react';
+import { Paper, CircularProgress, Typography } from '@material-ui/core';
+import { makeStyles, createTheme, ThemeProvider } from '@material-ui/core/styles';
+import { blue, pink } from '@material-ui/core/colors';
+import MessageList from './MessageList';
+import MessageForm from './MessageForm';
+import { sendMessageToApi } from './API';
 
-function App() {
+const theme = createTheme({
+  palette: {
+    type: 'dark',
+    primary: blue,
+    secondary: pink,
+  },
+});
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+  },
+  chatContainer: {
+    flex: '1',
+    overflow: 'auto',
+    padding: '1em',
+    marginBottom: '1em',
+  },
+  typingIndicator: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  error: {
+    color: 'red',
+  },
+});
+
+const App = () => {
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null); // New state for error
+  const messagesEndRef = useRef(null);
+  const classes = useStyles();
+
+  const handleNewMessageChange = (event) => {
+    setNewMessage(event.target.value);
+  };
+
+  const sendMessage = async (event) => {
+    event.preventDefault();
+    if (newMessage.trim() !== '') {
+      setIsLoading(true);
+      setMessages([...messages, { sender: 'user', content: newMessage, timestamp: new Date() }]);
+      setNewMessage('');
+
+      // Make API request
+      try {
+        const response = await sendMessageToApi(newMessage);
+        
+        // Add the response from the API to the messages
+        setMessages(prevMessages => [...prevMessages, { sender: 'assistant', content: response, timestamp: new Date() }]);
+      } catch (error) {
+        console.error('Failed to fetch the response from the API:', error);
+        setError('Failed to send message. Please try again later.'); // Set error message
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const toggleListen = () => {
+    setIsListening((prevIsListening) => !prevIsListening);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Paper className={classes.root}>
+        <div className={classes.chatContainer}>
+          <MessageList messages={messages} />
+          {isLoading && (
+            <div className={classes.typingIndicator}>
+              <CircularProgress size={20} />
+              <Typography variant="subtitle1">Typing...</Typography>
+            </div>
+          )}
+          {error && <div className={classes.error}>{error}</div>} {/* Display error message */}
+          <div ref={messagesEndRef} />
+        </div>
+        <MessageForm
+          newMessage={newMessage}
+          isListening={isListening}
+          toggleListen={toggleListen}
+          onNewMessageChange={handleNewMessageChange}
+          onSendMessage={sendMessage}
+        />
+      </Paper>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
