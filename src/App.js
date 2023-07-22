@@ -3,9 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Paper, CircularProgress, Typography } from '@material-ui/core';
 import { makeStyles, createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { blue, pink } from '@material-ui/core/colors';
-import MessageList from './MessageList';
-import MessageForm from './MessageForm';
-import { sendMessageToApi } from './API';
+import MessageList from './Message/MessageList';
+import MessageForm from './Message/MessageForm';
+import { sendMessageToApi } from './API/API';
+import SettingsSidebar from './Settings/SettingsSidebar'; // import SettingsSidebar
 
 const theme = createTheme({
   palette: {
@@ -43,11 +44,20 @@ const App = () => {
   const [isListening, setIsListening] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null); // New state for error
+  const [isSidebarOpen, setSidebarOpen] = useState(false); // New state for sidebar
   const messagesEndRef = useRef(null);
   const classes = useStyles();
 
   const handleNewMessageChange = (event) => {
     setNewMessage(event.target.value);
+  };
+
+  const handleOpenSidebar = () => {
+    setSidebarOpen(true);
+  };
+
+  const handleCloseSidebar = () => {
+    setSidebarOpen(false);
   };
 
   const sendMessage = async (event) => {
@@ -78,6 +88,8 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <button onClick={handleOpenSidebar}>Open Settings</button>
+      <SettingsSidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       <Paper className={classes.root}>
         <div className={classes.chatContainer}>
           <MessageList messages={messages} />
